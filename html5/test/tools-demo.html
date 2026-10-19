@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プレートの道具 — おためし</title>
+<style>
+  body { margin: 24px; color: #243447; background: #eef5fa; font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif; }
+  h1 { font-size: 24px; } p { font-size: 15px; }
+  canvas { display: block; width: 1040px; height: 720px; background: white; border: 1px solid #c6d5e0; border-radius: 12px; }
+  .sheet { overflow-x: auto; }
+  button { font: inherit; padding: 8px 16px; margin-bottom: 14px; cursor: pointer; }
+</style>
+<h1>プレートの道具</h1>
+<p>温度（おんど）、密度（みつど）、長さを はかる道具です。右の小さな道具は、目もり１回分を あらわします。</p>
+<button id="restart">密度のはりを もういちど動かす</button>
+<div class="sheet"><canvas id="demo" width="1040" height="720" aria-label="温度計、密度計、ものさし、３種類の地殻と道具のアイコンの見本"></canvas></div>
+<script src="../js/tools.js"></script>
+<script>
+  'use strict';
+  const T = window.PT.Tools;
+  const canvas = document.getElementById('demo'), ctx = canvas.getContext('2d');
+  const temperatures = [300, 1500, 5000], densities = [1000, 3300, 12000];
+  const thermometers = temperatures.map(k => { const t = new T.Thermometer(); t.setTemperature(k); return t; });
+  let meters;
+  function restart() { meters = densities.map(() => new T.DensityMeter()); }
+  restart(); document.getElementById('restart').addEventListener('click', restart);
+  const rulers = [1, 4].map(m => { const r = new T.Ruler(); r.setMultiplier(m); return r; });
+  const font = '"Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif';
+  function label(text, x, y, bold) {
+    ctx.fillStyle = '#243447'; ctx.font = (bold ? 'bold 17px ' : '14px ') + font;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText(text, x, y);
+  }
+  function at(x, y, draw) { ctx.save(); ctx.translate(x, y); draw(); ctx.restore(); }
+  let last;
+  function frame(now) {
+    const dt = last === undefined ? 0 : Math.min(0.1, (now - last) / 1000); last = now;
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas.width !== Math.round(1040 * dpr) || canvas.height !== Math.round(720 * dpr)) {
+      canvas.width = Math.round(1040 * dpr); canvas.height = Math.round(720 * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, 1040, 720);
+    label('温度計（おんどけい）', 24, 20, true);
+    thermometers.forEach((t, i) => {
+      const x = 30 + i * 215;
+      label(temperatures[i].toLocaleString('en-US') + ' K', x, 54);
+      at(x, 82, () => t.draw(ctx));
+    });
+    label('密度計（みつどけい）', 24, 237, true);
+    meters.forEach((m, i) => {
+      m.setDensity(densities[i], dt);
+      const x = 30 + i * 215;
+      label(densities[i].toLocaleString('en-US') + ' kg/m³', x, 271);
+      at(x, 300, () => m.draw(ctx));
+    });
+    label('ものさし', 813, 20, true);
+    rulers.forEach((r, i) => {
+      label('目もり ×' + r.multiplier, 803 + i * 115, 54);
+      at(825 + i * 115, 90, () => r.draw(ctx));
+    });
+    label('地殻（ちかく）のかけら', 24, 473, true);
+    ['CONTINENTAL', 'YOUNG_OCEANIC', 'OLD_OCEANIC'].forEach((type, i) => {
+      const x = 30 + i * 215;
+      label(['大陸', '新しい海の底', '古い海の底'][i], x, 510);
+      at(x, 544, () => T.drawCrustPiece(ctx, type));
+    });
+    label('道具ばこのアイコン', 760, 473, true);
+    ['ruler', 'thermometer', 'density'].forEach((kind, i) => {
+      T.drawToolboxIcon(ctx, kind, 780 + i * 75, 526, 56);
+      label(['ものさし', '温度計', '密度計'][i], 760 + i * 85, 601);
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+</script>
+</html>

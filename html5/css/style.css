@@ -1,0 +1,78 @@
+:root {
+  --panel-bg: rgb(238, 238, 238);
+  --panel-border: rgb(120, 120, 120);
+  --orange: rgb(255, 200, 0);
+  --font: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: rgb(217, 242, 255); font-family: var(--font); }
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; }
+
+#tabs { flex: 0 0 auto; display: flex; align-items: flex-end; gap: 4px; padding: 6px 10px 0; background: rgb(200, 200, 200); border-bottom: 1px solid #888; }
+.tab { font: bold 16px var(--font); padding: 6px 18px; border: 1px solid #888; border-bottom: none; border-radius: 8px 8px 0 0; background: rgb(225, 225, 225); cursor: pointer; }
+.tab.active { background: rgb(217, 242, 255); position: relative; top: 1px; }
+#appTitle { margin-left: auto; padding-bottom: 6px; font-weight: bold; color: #333; }
+
+#stageWrap { position: relative; flex: 1 1 auto; overflow: hidden; touch-action: none; }
+#gl, #overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+#overlay { touch-action: none; }
+#stage { position: absolute; left: 0; top: 0; width: 1008px; height: 676px; transform-origin: 0 0; pointer-events: none; }
+.tabUI { position: absolute; inset: 0; }
+.hidden { display: none !important; }
+.invisible { visibility: hidden !important; }
+
+.panel { position: absolute; pointer-events: auto; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 10px; padding: 6px 10px; font-size: 13px; }
+.row .panel, .row .resetPanel { position: relative; }
+.panelTitle { font-weight: bold; font-size: 13px; text-align: center; }
+.panelTitle.big { font-size: 16px; margin-bottom: 4px; }
+.row { position: absolute; display: flex; align-items: flex-end; gap: 10px; pointer-events: none; }
+.row.bl { left: 10px; bottom: 10px; }
+.row.br { right: 10px; bottom: 10px; gap: 20px; }
+.row.bottom { left: 10px; right: 10px; bottom: 10px; justify-content: space-between; }
+.resetPanel { pointer-events: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+button.orange { font: 14px var(--font); padding: 5px 12px; border-radius: 6px; border: 1px solid #a07000; background: linear-gradient(#ffe070, var(--orange)); cursor: pointer; }
+button.orange:disabled { background: #ddd; color: #999; border-color: #bbb; cursor: default; }
+label { display: block; cursor: pointer; white-space: nowrap; padding: 1px 0; }
+label.disabled { color: #999; cursor: default; }
+
+/* crust tab */
+#myCrustPanel { left: 50%; top: 10px; transform: translateX(-50%); width: 210px; }
+.slider { margin: 4px 0 8px; }
+.sTitle { text-align: center; font-size: 14px; }
+.slider input { width: 100%; }
+.sLimits { display: flex; justify-content: space-between; font-size: 10px; margin-top: -2px; }
+#zoomPanel { right: 10px; top: 10px; text-align: center; }
+input.vertical { writing-mode: vertical-lr; direction: rtl; height: 100px; width: 24px; margin: 8px auto 2px; display: block; }
+.crustSideLabel { position: absolute; top: 257px; font: bold 16px var(--font); }
+#oceanicLabel { left: 30px; }
+#continentalLabel { right: 30px; }
+.legend { text-align: center; }
+.legendRow { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.legendBar { width: 100px; height: 10px; border: 1px solid black; }
+
+/* toolbox */
+.toolbox { display: flex; align-items: flex-end; gap: 10px; text-align: center; }
+.toolbox .tbRuler canvas { display: block; }
+.toolbox .tbRight { display: flex; flex-direction: column; align-self: stretch; justify-content: space-between; }
+.toolbox .icons { display: flex; align-items: flex-end; gap: 5px; }
+.toolbox .icons canvas { display: block; }
+.toolbox canvas { cursor: grab; touch-action: none; }
+.toolbox canvas.out { visibility: hidden; }
+
+/* plate motion tab */
+#playModePanel { left: 10px; top: 10px; display: flex; gap: 10px; }
+#timePanel { right: 10px; top: 10px; display: flex; align-items: center; gap: 12px; }
+.timeReadout { text-align: center; font-size: 16px; }
+.speed { width: 120px; }
+.speed input { width: 100%; }
+button.round { width: 44px; height: 44px; border-radius: 50%; border: 1px solid #555; background: radial-gradient(#fff, #9c9); font-size: 18px; cursor: pointer; }
+button.round.small { width: 34px; height: 34px; font-size: 12px; }
+button.round:disabled { opacity: 0.4; cursor: default; }
+#motionTypePanel { top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+.motionChoice { width: 100px; text-align: center; }
+.motionChoice canvas { display: block; margin: 0 auto 2px; }
+#crustChooser { display: flex; gap: 20px; padding: 6px 10px 10px; }
+.crustSlot { width: 140px; text-align: center; }
+.crustSlot .pieceArea { position: relative; height: 100px; margin-top: 10px; }
+.crustPiece { position: absolute; left: 0; cursor: grab; touch-action: none; }
+.dragPiece { position: absolute; pointer-events: none; z-index: 10; }
